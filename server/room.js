@@ -472,6 +472,8 @@ export class Room {
       poweredDown: r.poweredDown, destroyed: r.destroyed, dead: r.dead,
       options: r.options.length,
       archiveX: r.archiveX, archiveY: r.archiveY,
+      // hidden until their dock is picked during the start auction (matches solo play)
+      placed: r.placed,
     }));
   }
 
