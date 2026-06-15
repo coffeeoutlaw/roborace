@@ -4,7 +4,7 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { Room, RoomError } from './room.js';
 
@@ -39,26 +39,6 @@ export function createGameServer({ port = 0, roomOpts = {} } = {}) {
   };
 
   const httpServer = http.createServer(async (req, res) => {
-    // dev-only: lets the client (or test tooling) drop a rendered frame to disk,
-    // so the 3D scene can be inspected even when the preview tab can't screenshot
-    if (req.url === '/debug/shot') {
-      res.setHeader('access-control-allow-origin', '*');
-      res.setHeader('access-control-allow-methods', 'POST, OPTIONS');
-      if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
-      if (req.method === 'POST') {
-        let body = '';
-        req.on('data', (c) => { body += c; if (body.length > 8e6) req.destroy(); });
-        req.on('end', async () => {
-          try {
-            const b64 = body.replace(/^data:image\/\w+;base64,/, '');
-            const file = path.join(DIST, '..', '.debug-shot.png');
-            await import('node:fs/promises').then((fs) => fs.writeFile(file, Buffer.from(b64, 'base64')));
-            res.writeHead(200); res.end('saved');
-          } catch { res.writeHead(500); res.end(); }
-        });
-        return;
-      }
-    }
     if (!existsSync(DIST)) {
       res.writeHead(200, { 'content-type': 'text/plain' });
       res.end('Robo Race server is running. Client not built — run `npm run build` (dev mode: use the Vite server).');
@@ -172,8 +152,8 @@ export function createGameServer({ port = 0, roomOpts = {} } = {}) {
   });
 }
 
-// run directly: node server/server.js
-if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
+// run directly: node server/server.js  (cross-platform main-module check)
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const port = Number(process.env.PORT) || 5202;
   createGameServer({ port }).then((s) => {
     console.log(`Robo Race server listening on http://localhost:${s.port} (ws at /ws)`);
