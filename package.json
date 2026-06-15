@@ -1,0 +1,21 @@
+{
+  "name": "roborally",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5201 --strictPort",
+    "build": "vite build",
+    "test": "vitest run",
+    "server": "node server/server.js",
+    "online": "npm run build && node server/server.js"
+  },
+  "dependencies": {
+    "three": "^0.165.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "vitest": "^2.1.0"
+  }
+}

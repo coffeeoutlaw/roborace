@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robo Race — classic factory racing</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="scene"></div>
+  <div id="game-ui" class="hidden">
+    <div id="topbar">
+      <span id="banner">—</span>
+      <span id="speed">
+        <button data-speed="1" class="active" title="Animation speed: normal">1×</button>
+        <button data-speed="2" title="Animation speed: double — turns play twice as fast">2×</button>
+        <button data-speed="skip" title="Skip animations — turns resolve instantly">⏩ skip</button>
+      </span>
+      <button id="btn-mute" title="Mute / unmute sound effects">🔊</button>
+      <button id="btn-music" title="Music on / off">🎵</button>
+      <input id="vol-music" type="range" min="0" max="100" value="40"
+        title="Music volume" aria-label="Music volume" />
+      <button id="btn-menu" title="Course menu — Esc or “Resume” comes back without restarting">Menu</button>
+    </div>
+    <div id="hud"></div>
+    <div id="log"></div>
+    <div id="programming" class="hidden"></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
