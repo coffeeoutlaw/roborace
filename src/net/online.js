@@ -22,8 +22,8 @@ export class OnlineGame {
     this.isHost = false;
     this.q = Promise.resolve(); // animation/UI sequence queue
     this.lobby = new Lobby({
-      onCreate: (name) => this.#send({ t: 'create', name }),
-      onJoin: (name, code) => this.#send({ t: 'join', name, code }),
+      onCreate: (name) => this.#withConnection(() => this.#send({ t: 'create', name })),
+      onJoin: (name, code) => this.#withConnection(() => this.#send({ t: 'join', name, code })),
       onConfig: (cfg) => this.#send({ t: 'config', ...cfg }),
       onStart: () => this.#send({ t: 'start' }),
       onLeave: () => this.leave(),
@@ -33,11 +33,33 @@ export class OnlineGame {
 
   get active() { return !!this.ws && this.ws.readyState <= 1; }
 
-  // Entry point from the main menu (optionally with a ?room=CODE prefill).
+  // Entry point from the main menu (optionally with a ?room=CODE prefill). The lobby
+  // shows immediately; the connection happens behind it so a slow/cold or unreachable
+  // server surfaces as a status message instead of a blank screen.
   async open(prefillCode = '') {
     this.ctx.app.mode = 'online';
-    await this.#connect();
-    this.lobby.showConnect(prefillCode);
+    this.lobby.showConnect(prefillCode, 'Connecting to the server…');
+    try {
+      await this.#connect();
+      this.lobby.setStatus('');
+    } catch {
+      this.lobby.setStatus('⚠ Can’t reach the game server (it may be waking up). '
+        + 'Enter your name and click Create or Join to retry.');
+    }
+  }
+
+  // Run an action that needs a live socket, (re)connecting first if necessary.
+  async #withConnection(fn) {
+    if (!this.active) {
+      this.lobby.setStatus('Connecting…');
+      try {
+        await this.#connect();
+      } catch {
+        this.lobby.setStatus('⚠ Still can’t reach the server — try again in a moment.');
+        return;
+      }
+    }
+    fn();
   }
 
   // Try to silently resume a match after a reload. Resolves true if resumed.

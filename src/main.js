@@ -17,7 +17,9 @@ import { Animator } from './render/animator.js';
 import { Hud } from './ui/hud.js';
 import { Log } from './ui/log.js';
 import { ProgrammingPanel } from './ui/programming.js';
-import { respawnModal, stayDownModal, gameOverModal, courseMenu } from './ui/modals.js';
+import {
+  respawnModal, stayDownModal, gameOverModal, courseMenu, titleScreen,
+} from './ui/modals.js';
 import { BoardTooltip } from './ui/tooltip.js';
 import { OnlineGame } from './net/online.js';
 import { sfx } from './audio/sfx.js';
@@ -247,7 +249,19 @@ async function gameOver() {
     lines: standings,
   });
   if (choice === 'again') startCourse(app.courseIndex, SEED + st.turn);
-  else showMenu();
+  else showTitle();
+}
+
+// Home/landing screen over the splash art. Single Player -> course select,
+// Play Online -> lobby.
+async function showTitle() {
+  app.phase = 'menu';
+  app.mode = 'local';
+  document.getElementById('game-ui').classList.add('hidden');
+  progPanel.hide();
+  const pick = await titleScreen();
+  if (pick === 'online') { onlineGame.open((params.get('room') || '').toUpperCase()); return; }
+  showMenu();
 }
 
 async function showMenu({ resumable = false } = {}) {
@@ -271,7 +285,7 @@ const onlineGame = new OnlineGame({
   setBanner,
   setupGameView,
   pickDock: pickDockUI,
-  onExit: () => showMenu(),
+  onExit: () => showTitle(),
 });
 
 const muteBtn = document.getElementById('btn-mute');
@@ -345,6 +359,6 @@ window.__game = {
   if (params.has('course')) {
     startCourse(Math.min(COURSES.length - 1, Math.max(0, Number(params.get('course')) - 1)));
   } else {
-    showMenu();
+    showTitle();
   }
 })();

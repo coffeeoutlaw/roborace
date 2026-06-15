@@ -86,6 +86,31 @@ body {
 .bid-title { text-align: center; font-size: 13px; color: #ffd87a; margin-bottom: 8px; }
 .pcard.bid-picked { outline: 3px solid #43a55f; transform: translateY(-6px); }
 
+/* ---- title / landing screen ---- */
+.title-screen {
+  position: fixed; inset: 0; z-index: 100;
+  background: #0b0e13 url('/splash.jpg') center/cover no-repeat;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+}
+.title-screen::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 50%, rgba(7, 10, 16, 0.9));
+}
+.title-buttons { position: relative; z-index: 1; display: flex; gap: 20px; margin-bottom: 6vh; }
+.title-btn {
+  padding: 16px 32px; font-size: 21px; font-weight: 800; letter-spacing: 0.5px;
+  border-radius: 12px; cursor: pointer; color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.35); box-shadow: 0 6px 22px #0009;
+  transition: transform 0.1s, filter 0.1s;
+}
+.title-btn:hover { transform: translateY(-3px); filter: brightness(1.12); }
+.title-btn.single { background: linear-gradient(#3aa85a, #237a3e); }
+.title-btn.online { background: linear-gradient(#3f97c8, #1f5e85); }
+.title-foot {
+  position: relative; z-index: 1; color: #aab8c8; font-size: 13px; margin-bottom: 3vh;
+  text-shadow: 0 1px 4px #000;
+}
+
 /* ---- board hover tooltip ---- */
 #tooltip {
   position: fixed; z-index: 60; pointer-events: none;

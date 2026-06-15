@@ -64,6 +64,24 @@ export function gameOverModal({ title, lines, victory }) {
   });
 }
 
+// Full-screen landing screen over the splash art. Resolves 'single' or 'online'.
+export function titleScreen() {
+  return new Promise((res) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'title-screen';
+    wrap.innerHTML = `
+      <div class="title-buttons">
+        <button class="title-btn single">▶ Single Player</button>
+        <button class="title-btn online">🌐 Play Online</button>
+      </div>
+      <div class="title-foot">A fan-made tribute to RoboRally · race the factory, touch every flag</div>`;
+    document.body.appendChild(wrap);
+    const pick = (v) => { wrap.remove(); res(v); };
+    wrap.querySelector('.single').addEventListener('click', () => pick('single'));
+    wrap.querySelector('.online').addEventListener('click', () => pick('online'));
+  });
+}
+
 // Resolves with a course index, or null if the player backs out (only possible
 // when `resumable` — i.e. a game is already in progress).
 export function courseMenu(courses, { resumable = false } = {}) {
